@@ -6,7 +6,7 @@ import System.IO ()
 {-
 
 Example formatting for grid printing:
-[# is living cell; empty \space\ is dead]
+['#' is living cell; ' ' is dead]
 
 |#| | |#|#|#|#| | | |
 | | |#| | | |#|#| | |
@@ -30,19 +30,28 @@ Algorithm to calculate state of a cell:
 
 -}
 
--- Creating a coordinate type which contains an (x,y) position in the grid
-type Position = (Int, Int)
-
--- Creating a grid type with contains an 1D array of positions
-type Grid = [Position]
+-- Grid will be an array of booleans where TRUE is living cell and FALSE is dead cell
+type Grid = [Bool]
 
 -- Square dimensions of life grid
 dimensions :: Int 
 dimensions = 10
 
--- Input x,y coordinate to return the associated index in a 1D array, based on "dimensions"
-getIndexFromCoordinate :: Int -> Int -> Int
-getIndexFromCoordinate x y = x + y
+-- Example Grid of cells (3x3)
+example :: Grid
+example = [True, False, True, True, False, True, False, False, True]
+
+{-
+1) Find new state of cell (check 8 cells around, store amount of living cells to variable)
+2) Append new state Bool to a new Grid list
+3) Output new Grid list once all states have been determined and appended
+-}
+findNextCellState :: Grid -> Grid
+findNextCellState grid = grid
+
+
+
+
 
 
 
@@ -52,3 +61,6 @@ getIndexFromCoordinate x y = x + y
 addEx :: Int
 addEx = 5 + 4
 
+-- Input x,y coordinate to return the associated index in a 1D array, based on "dimensions"
+getIndexFromCoordinate :: Int -> Int -> Int
+getIndexFromCoordinate x y = x + y -- don't think we need to actually do this...
