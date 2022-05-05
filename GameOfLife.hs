@@ -35,7 +35,7 @@ type Grid = [Bool]
 
 -- Square dimensions of life grid
 dimensions :: Int
-dimensions = 3
+dimensions = 4
 
 -- Example Grid of cells (3x3)
 {-
@@ -45,7 +45,7 @@ dimensions = 3
 | |#| | |
 -}
 example :: Grid
-example = [True, True, False, True, False, True, True, True, False]
+example = [True, True, False, False,    True, False, True, True,    True, True, False, True,    False, True, False, False]
 
 
 -- Printing function to display Grid to console properly
@@ -71,34 +71,50 @@ printGrid n = do
 
 -}
 
--- Takes in Grid array and desired index, and outputs True/False state of cell as 1 or 0
+-- Takes in Grid array and desired index, and converts True/False state of cell to 1s and 0s
 boolToInt :: Grid -> Int -> Int
 boolToInt grid idx = do
-    if grid !! idx
+    if idx < 0 || idx > (dimensions*dimensions - 1)
+        then 0
+    else if grid !! idx
         then 1
     else 0
 
--- Takes current cell state at specified index and outputs next-gen livingstate
-determineCellState :: Grid -> Int -> Bool 
+-- Four functions to check out-of-bounds index locations in reference to the "Grid" layout
+leftOverlap :: Int -> Int
+leftOverlap idx = do
+    if idx `rem` dimensions == 0
+        then 0
+    else 1
+
+rightOverlap :: Int -> Int
+rightOverlap idx = do
+    if idx `rem` dimensions == (dimensions-1)
+        then 0
+    else 1
+
+topOverlap :: Int -> Int
+topOverlap idx = do
+    if (idx - dimensions) < 0
+        then 0
+    else 1
+
+bottomOverlap :: Int -> Int
+bottomOverlap idx = do
+    if (idx + dimensions) > (dimensions*dimensions) -- essentially Grid array length
+        then 0
+    else 1
+
+-- Takes current cell state at specified index and outputs next-gen living state
+determineCellState :: Grid -> Int -> Bool
 determineCellState grid i = do
-    let numOfTopNeighbors = boolToInt grid (i-dimensions-1) + boolToInt grid (i-dimensions) + boolToInt grid (i-dimensions+1)
-    let numOfSideNeighbors = boolToInt grid (i-1) + boolToInt grid (i+1)
-    let numOfBottomNeighbors = boolToInt grid (i+dimensions-1) + boolToInt grid (i+dimensions) + boolToInt grid (i+dimensions+1)
+    let numOfTopNeighbors = (boolToInt grid (i-dimensions-1))*(topOverlap i)*(leftOverlap i) + (boolToInt grid (i-dimensions))*(topOverlap i) + (boolToInt grid (i-dimensions+1))*(topOverlap i)*(rightOverlap i)
+    let numOfSideNeighbors = (boolToInt grid (i-1))*(leftOverlap i) + (boolToInt grid (i+1))*(rightOverlap i)
+    let numOfBottomNeighbors = (boolToInt grid (i+dimensions-1))*(bottomOverlap i)*(leftOverlap i) + (boolToInt grid (i+dimensions))*(bottomOverlap i) + (boolToInt grid (i+dimensions+1))*(bottomOverlap i)*(rightOverlap i)
     let numOfLivingNeighbors = numOfTopNeighbors + numOfSideNeighbors + numOfBottomNeighbors
-    not (numOfLivingNeighbors < 2 || numOfLivingNeighbors > 3) -- modify this to check dead/liveness of cell
+    if grid !! i -- if cell is alive
+        then not (numOfLivingNeighbors < 2 || numOfLivingNeighbors > 3) -- if <2 or >3 neighbors, returns False (dead) state for the cell
+    else numOfLivingNeighbors == 3 -- if cell is dead, and has exactly 3 neighbors, then returns True (alive) state for cell
 
 
 
-
-
-
-
----------------------------------------------------------------
--- Test stuff below, irrelevant to main program...
-
--- addEx :: Int
--- addEx = 5 + 4
-
--- Input x,y coordinate to return the associated index in a 1D array, based on "dimensions"
--- getIndexFromCoordinate :: Int -> Int -> Int
--- getIndexFromCoordinate x y = x + y -- don't think we need to actually do this...
