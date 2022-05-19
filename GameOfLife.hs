@@ -31,7 +31,7 @@ Algorithm to calculate state of a cell:
 -- Square dimension (length of square side) of life grid
 -- MODIFY THIS TO SET THE SIZE OF THE GAME OF LIFE GRID.
 dimensions :: Int
-dimensions = 16
+dimensions = 10
 
 -- Determines delay between each new evolution, to be able to watch the process in real time.
 -- MODIFY THIS TO CHANGE DELAY.
@@ -119,20 +119,26 @@ determineCellState i grid = do
 -- traverse each cell in the grid, 16 cells in total, to re-evaluate the cell value.
 evolution y = [ determineCellState idx y | idx <- [0..(totalCells-1)]]
 
--- Display the grid 4 items in a row
-mkGrid :: Grid -> String
-mkGrid [] = ""
-mkGrid (x1:x2:x3:x4:xs) =  "|" ++ intToSymbol x1 ++ "|" ++ intToSymbol x2 ++ "|" ++ intToSymbol x3 ++ "|" ++ intToSymbol x4 ++ "|" ++ "\n" ++ mkGrid xs
-
-
+-- Converts state of cell (1 or 0) to appropriate symbol ('#' or ' ')
 intToSymbol :: Int -> String
 intToSymbol int = do
     if int == 1
         then "#"
     else " "
 
--- print grid [DEPRECATED]
-prtGrid y = putStrLn (mkGrid y)
+-- Call recursive function and print resulting grid
+printGrid y = putStrLn (listToPrettyGridString totalCells y "")
+
+-- Converts list of integers to a pretty grid with symbols and seperators for the "cells"
+listToPrettyGridString :: Int -> Grid -> String -> String
+listToPrettyGridString n grid gridString
+    | n == 0 = gridString
+    | n > 0 = do
+        let cellAsSymbol = intToSymbol (grid !! (totalCells-n))
+        let newString = gridString ++ "|" ++ cellAsSymbol
+        if (n-1) `mod` dimensions == 0
+            then listToPrettyGridString (n-1) grid (newString ++ "|\n")
+        else listToPrettyGridString (n-1) grid newString
 
 -- Pauses for specified amount of milliseconds between each evolution
 wait :: Int -> IO ()
@@ -165,17 +171,3 @@ main =  do
     x <- getLine
     let iterations = read x::Int
     playGame iterations (evolution initGrid)
-
--- Call recursive function and print resulting grid
-printGrid y = putStrLn (listToPrettyGridString totalCells y "")
-
--- Converts list of integers to a pretty grid with symbols and seperators for the "cells"
-listToPrettyGridString :: Int -> Grid -> String -> String
-listToPrettyGridString n grid gridString
-    | n == 0 = gridString
-    | n > 0 = do
-        let cellAsSymbol = intToSymbol (grid !! (totalCells-n))
-        let newString = gridString ++ "|" ++ cellAsSymbol
-        if (n-1) `mod` dimensions == 0
-            then listToPrettyGridString (n-1) grid (newString ++ "|\n")
-        else listToPrettyGridString (n-1) grid newString
