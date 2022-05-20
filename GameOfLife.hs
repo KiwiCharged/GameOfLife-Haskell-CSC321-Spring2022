@@ -2,7 +2,7 @@ import Data.List ()
 import System.IO ()
 import System.Random (randoms, mkStdGen)
 
--- Conway's "Game of Life" Haskell implementation by Justin Karp
+-- Conway's "Game of Life" Haskell implementation by Justin Karp and Simranjit Kaur.
 -- This Game of Life implementation supports infinite grid/canvas sizes!
 
 {-
@@ -17,7 +17,6 @@ Example formatting for grid printing:
 |#| |#| |#|#|#|#|
 |#| |#|#| |#| |#|
 |#| |#|#|#|#|#|#|
-| | |#|#| |#|#|#|
 
 Algorithm to calculate state of a cell:
 1) find cell position
@@ -49,7 +48,7 @@ totalCells = dimensions*dimensions
 -- Grid will be an array of Integers where 1 is living cell and 0 is dead cell
 type Grid = [Int]
 
--- Test Grid of cells (4x4) [USED FOR DEBUGGING. DO NOT USE OTHERWISE.]
+-- Example grid of cells (4x4) [USED FOR DEBUGGING. DO NOT USE OTHERWISE.]
 {-
 |#|#| | |
 |#| |#|#|
@@ -111,7 +110,7 @@ determineCellState i grid = do
         then if numOfLivingNeighbors < 2 || numOfLivingNeighbors > 3 -- if <2 or >3 neighbors, returns 0 (dead) state for the cell
             then 0
         else 1
-    else if numOfLivingNeighbors == 3 -- if cell is dead, and has exactly 3 neighbors, then returns 1 (alive) state for cell
+    else if numOfLivingNeighbors == 3 -- if cell is dead, AND has exactly 3 neighbors, then returns 1 (alive) state for cell
         then 1
     else 0
 
@@ -149,10 +148,10 @@ playGame :: Int -> Grid -> IO()
 playGame n grid
     | n == 0  = putStrLn "Game over. No more iterations left."
     | all (==0) grid = do
-        printGrid grid -- print grid -- change back to prtGrid grid
+        printGrid grid
         putStrLn "Everyone died. The end."
     | n > 0  = do 
-        printGrid grid -- print grid -- change back to prtGrid grid
+        printGrid grid
         wait delayBetweenEvolutions
         playGame (n-1) (evolution grid)
 
@@ -165,7 +164,7 @@ main =  do
     x <- getLine
     let initGrid = genRand01 (read x :: Int)
     putStr "\nInitial grid: \n"
-    printGrid initGrid -- print initGrid -- change back to prtGrid grid
+    printGrid initGrid 
 
     putStr "Enter how many evolutions you want to play: "
     x <- getLine
